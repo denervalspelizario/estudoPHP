@@ -1,38 +1,48 @@
-import { Body, Controller, Post, Get, Param, Put, Patch } from '@nestjs/common';
+import { Body, Controller, Post, Get, Param, Put, Patch, Delete, ParseIntPipe } from '@nestjs/common';
+import { CreateUserDTO } from './dto/create-user.dto';
+import { UpdatePutUserDTO } from './dto/update-put-user.dto';
+import { UpdatePatchUserDTO } from './dto/update-patch-user.dto';
 
-@Controller('users') // nome da rota
+@Controller('users')  // rotas tipos users
 export class userController{
+  
   @Post() // tipo post
-  async create(@Body() body){ // recebimento de dado via body
-    return{body};
+  async create(@Body() {email, name, password}: CreateUserDTO){ // body recebe parametros de CreateuserDTO 
+    return{email, name, password}; // retorna os dados
   }
-
-  @Get()
+  
+  @Get() // tipo get
   async list(){ 
-    return{users:[]}; // retorna lista de users 
+    return{users:[]};  
   }
-
-  @Get(':id') // vai /users/:id
-  async readOne(@Param() username){  // recebi um parametro na url com nome de username
+  
+  @Get(':id')  
+  async readOne(@Param() username){  
     return{user:{}, username};
   }
 
-
-  @Put(':id')
-  async update(@Body() body, @Param() params){
-    return{
+  @Put(':id') // dados(email, name e passwor) pelo body  seguindo a tipagem de UpdatePutUserDTO e is pelo params(url)
+  async update(@Body() {email, name, password}: UpdatePutUserDTO, @Param('id', ParseIntPipe) id: number){ 
+    return{                                                                         
       method: 'put',
-      body,
-      params
+      email, name, password,
+      id
     }
   }
-
+  
   @Patch(':id')
-  async updatePartial(@Body() body, @Param() params){
+  async updatePartial(@Body() {email, name, password}: UpdatePatchUserDTO, @Param('id', ParseIntPipe) id: number){
     return{
       method: 'patch',
-      body,
-      params
+      email, name, password,
+      id
+    }    
+  }
+
+  @Delete(':id') // id recebido por params e transformando ela em number usando o ParseIntPipe(precisa importar)
+  async delete(@Param('id', ParseIntPipe) id: number){ 
+    return{
+      id
     }    
   }
 }
